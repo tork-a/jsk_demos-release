@@ -1,54 +1,9 @@
-jsk_demo_common
-===
+jsk_demos [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_demos.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_demos)
+=========
 
-This package includes common action functions for daily assistant robot
-and task execution manager which is used for planning and execution with attention observation.
+JSK demo programs
 
-## directories
 
-euslisp/: source codes
-sample/: sample codes
+## [jsk_2013_04_pr2_610](https://github.com/jsk-ros-pkg/jsk_demos/tree/master/jsk_2013_04_pr2_610)
 
-## samples
-
-### attention-observation-sample.l
-
-```bash
-# terminal 0
-$ roscore
-```
-
-```bash
-# terminal 1
-$ rosrun roseus roseus
-irteusgl$ (load "package://jsk_demo_common/sample/attention-observation-sample.l)
-irteusgl$ (test)
-```
-
-while executing actions:
-
-```bash
-# terminal 2
-$ rosrun roseus roseus
-irteusgl$ (load "package://jsk_demo_common/euslisp/attention-observation.l")
-irteusgl$ (pr2-init)
-irteusgl$ (send *ri* :cancel-all-motion)
-```
-
-then robot action is interrupted.
-
-### preemptive-task-execution-sample.l
-
-```bash
-$ rosrun roseus roseus
-irteusgl$ (load "package://jsk_demo_common/sample/preemptive-task-execution-sample.l")
-```
-
-you can see generated state machine by executing follow command before executing sample above:
-
-```bash
-$ rosrun smach_viewer smach_viewer.py
-```
-
-![place](https://gist.githubusercontent.com/furushchev/37b003f33fd604c8f88a/raw/db7112b145198bde8c8d3e014ee51cb746e492da/pr2_interface.png =100x100)
-![smach](https://gist.githubusercontent.com/furushchev/37b003f33fd604c8f88a/raw/7443a00327f220933f6c4fcf0b607d4be728e71a/smach_viewer.png =400x400)
+   ![bloom](https://gist.githubusercontent.com/k-okada/b3308c08ce31230e8947/raw/c14d6c52d8bf35fd5c244d989beccd35caa6fa8a/jsk_2013_04_pr2_irt_4.png =200x200)
