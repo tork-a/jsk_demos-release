@@ -1,0 +1,12 @@
+Source: ros-indigo-jsk-demo-common
+Section: misc
+Priority: extra
+Maintainer: Hiroyuki Mikita <mikita@jsk.imi.i.u-tokyo.ac.jp>
+Build-Depends: debhelper (>= 9.0.0), ros-indigo-catkin, ros-indigo-control-msgs, ros-indigo-jsk-hark-msgs, ros-indigo-jsk-maps, ros-indigo-jsk-perception, ros-indigo-message-generation, ros-indigo-pddl-planner, ros-indigo-pr2-gripper-sensor-msgs, ros-indigo-pr2eus, ros-indigo-roseus, ros-indigo-roseus-smach
+Homepage: http://wiki.ros.org/jsk_demo_common
+Standards-Version: 3.9.2
+
+Package: ros-indigo-jsk-demo-common
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-control-msgs, ros-indigo-joint-state-publisher, ros-indigo-jsk-hark-msgs, ros-indigo-jsk-maps, ros-indigo-jsk-perception, ros-indigo-message-runtime, ros-indigo-pddl-planner, ros-indigo-pr2-gripper-sensor-msgs, ros-indigo-pr2-navigation-self-filter, ros-indigo-pr2eus, ros-indigo-robot-state-publisher, ros-indigo-roseus, ros-indigo-roseus-mongo, ros-indigo-roseus-smach
+Description: The jsk_demo_common package
