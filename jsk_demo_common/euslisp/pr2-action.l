@@ -4,14 +4,6 @@
 (require :detection-interface "package://jsk_perception/euslisp/detection_interface.l")
 (require :pr2-pose "package://jsk_demo_common/euslisp/pr2-pose.l")
 
-
-;; check if jsk_smart_gui exists
-(if (ros::rospack-find "jsk_smart_gui")
-    (progn
-      (ros::load-ros-manifest "jsk_smart_gui")
-      (require :jsk-smart-gui-utils "package://jsk_smart_gui/src/utils.l"))
-    (warning-message 1 ";; Could not found jsk_smarg_gui....~%"))
-
 (defvar *use-voicetext* t)
 (defvar *use-english* nil)
 
@@ -284,6 +276,43 @@
 				:rotation-axis :y)
   (send *ri* :angle-vector (send *pr2* :angle-vector))
   (send *ri* :wait-interpolation))
+
+(defun generate-slide-path
+  "originally defined at jsk_smart_gui/src/utils.l"
+  (start-point point1 point2 path-length &key (div 10))
+  (let* ((di (normalize-vector (v- point2 point1)))
+         (ln (make-line point1 point2))
+         (fp (send ln :point (send ln :foot start-point))))
+    (let* ((ret nil)
+           (fc (make-coords :pos (copy-object start-point))))
+      (push (send fc :copy-worldcoords) ret)
+      (scale (/ path-length (float div)) di di)
+      (dotimes (i div)
+        (send fc :translate di)
+        (push (send fc :copy-worldcoords) ret))
+      (nreverse ret))))
+
+(defun generate-circle-path
+  "originally defined at jsk_smart_gui/src/utils.l"
+  (start-point point1 point2 angle &key (div 20))
+  (let* ((axis (normalize-vector (v- point1 point2)))
+   (ln (make-line point1 point2))
+   (fp (send ln :point (send ln :foot start-point))))
+    (unless (and (float-vector-p start-point)
+     (= (length start-point) 3)
+     (float-vector-p axis)
+     (= (length axis) 3))
+      (return-from generate-circle-path nil))
+    (setq *tmp-fp* fp);;
+    (let* ((ret nil)
+     (fc (make-coords :pos fp))
+     (trans (send fc :transformation (make-coords :pos start-point))))
+      (dotimes (i div)
+  (send fc :rotate (/ angle div) axis)
+  (push
+   (send (send (send fc :copy-worldcoords) :transform trans) :rotate pi/2 :x)
+	 ret))
+      (nreverse ret))))
 
 (defun open-fridge-traj (hand handle &optional (rad/length pi/2) &rest args
                          &key (radius 500) (path-div 20) (door-type :circle) &allow-other-keys)
@@ -967,25 +996,14 @@
     (return-from grasp-can-motion isgrasp)
     ))
 
-(defun go-back-from-fridge (&key (isgrasp t) (move t) (use-arm :rarm) (rotation 20))
-  (when isgrasp
-    (when move
-      (case use-arm
+(defun go-back-from-fridge (&key (use-arm :rarm) (rotation 20))
+  (case use-arm
         (:rarm
          (send *ri* :go-pos-unsafe -0.3 0.05 (- rotation)))
         (:larm
-         (send *ri* :go-pos-unsafe -0.3 -0.2 (- rotation)))))
-    (send *ri* :ros-wait 0.0 :spin-self t :spin t) ;; attention-check ...
-    (return-from go-back-from-fridge t))
-  ;; (unix::sleep 2)
-  (if (and (boundp '*use-voicetext*) *use-voicetext*)
-      (cond
-       ((and (boundp '*use-english*) *use-english*)
-        (speak-jp (format nil "I could no pick up ~A" *type*)))
-       (t (speak-jp (format nil "~Aを取り出しませんでした。" *type*))))
-    (speak-jp (format nil "~A を とりだし ません でした" *type*)))
-  nil
-  )
+         (send *ri* :go-pos-unsafe -0.3 -0.2 (- rotation))))
+  (send *ri* :ros-wait 0.0 :spin-self t :spin t) ;; attention-check ...
+  t)
 
 (warn ";; define grasp-can")
 (defvar *use-arm-navigation* nil)
@@ -995,27 +1013,21 @@
   ;; move-to can spot for grasping
   (move-to-can-spot :use-arm use-arm :rotation rotation :move move :pre-move pre-move)
   (grasp-can-init)
-  (when (not move-only)
+  (cond
+   ((not move-only)
     (let (isgrasp res)
       ;; grasp can
       (unix:sleep 2)
       (dotimes (trial 10)
         (setq isgrasp (grasp-can-motion :use-arm use-arm :rotation rotation))
-        (if isgrasp (return))
-        )
-      (setq res (go-back-from-fridge :isgrasp isgrasp :move move :use-arm use-arm :rotation rotation))
-      (when res (return-from grasp-can t))
-      )
-    )
-  (when (and move post-move)
-    (if (eq use-arm :larm) (setq rotation (- rotation)))
-    (case use-arm
-      (:rarm
-       (send *ri* :go-pos-unsafe -0.3 0.05 (- rotation)))
-      (:larm
-       (send *ri* :go-pos-unsafe -0.3 -0.2 (- rotation)))))
-  (send *ri* :ros-wait 1.0 :spin-self t :spin t) ;; attention-check ...
-  nil)
+        (if isgrasp (return)))
+      (if isgrasp
+          (if move
+            (go-back-from-fridge :use-arm use-arm :rotation rotation) t)
+        (progn (speak-jp "失敗しました。") isgrasp))))
+   ((and move move-only post-move)
+    (go-back-from-fridge :use-arm use-arm :rotation rotation))
+   (t t)))
 
 (warn ";; define close-fridge")
 (defun close-fridge (&key (use-arm :rarm) (wait t))
