@@ -1,3 +1,44 @@
+## jsk_demos (kinetic) - 0.0.4-0
+
+The packages in the `jsk_demos` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release jsk_demos --track kinetic --rosdistro kinetic` on `Thu, 12 Apr 2018 12:52:57 -0000`
+
+These packages were released:
+- `drc_com_common`
+- `elevator_move_base_pr2`
+- `jsk_demo_common`
+- `jsk_maps`
+
+These packages were explicitly ignored:
+- `detect_cans_in_fridge_201202`
+- `drc_task_common`
+- `drc_valve_task`
+- `gazebo_drive_simulator`
+- `interactive_behavior_201409`
+- `jsk_2011_07_pr2_semantic`
+- `jsk_2013_04_pr2_610`
+- `jsk_2013_05_pr2_tatu`
+- `jsk_2014_06_pr2_drcbox`
+- `jsk_2015_06_hrp_drc`
+- `jsk_2017_10_semi`
+- `jsk_semantic_maps`
+
+Version of package(s) in repository `jsk_demos`:
+
+- upstream repository: https://github.com/jsk-ros-pkg/jsk_demos.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `0.0.4-0`
+
+Versions of tools used:
+
+- bloom version: `0.6.4`
+- catkin_pkg version: `0.4.1`
+- rosdep version: `0.12.2`
+- rosdistro version: `0.6.8`
+- vcstools version: `0.1.40`
+
+
 ## jsk_demos (indigo) - 0.0.4-0
 
 The packages in the `jsk_demos` repository were released into the `indigo` distro by running `/usr/bin/bloom-release jsk_demos --track indigo --rosdistro indigo` on `Wed, 15 Mar 2017 02:09:17 -0000`
