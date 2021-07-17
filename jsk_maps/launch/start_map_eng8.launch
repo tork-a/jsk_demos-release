@@ -1,11 +1,17 @@
 <launch>
   <arg name="MACHINE" default="localhost" />
+  <arg name="keepout" default="false" />
   <arg name="launch_map_server" default="true" />
+  <arg name="use_machine" default="false" />
+  <arg name="use_pictogram" default="false" />
+
+  <machine name="localhost" address="localhost" if="$(arg use_machine)" />
 
   <node pkg="tf" type="static_transform_publisher" name="$(anon map_tfA)"
         args="0 0 0 0 0 0 /world /eng8 100"/>
 
   <include file="$(find jsk_maps)/launch/include/start_map_eng8_main.xml">
+    <arg name="keepout" value="$(arg keepout)"/>
     <arg name="launch_map_server" value="$(arg launch_map_server)" />
   </include>
 
@@ -23,6 +29,7 @@
         machine="$(arg MACHINE)"
         output="screen" >
     <param name="~scene" value="eng8" />
+    <param name="~use_pictogram" value="$(arg use_pictogram)" />
   </node>
 
 </launch>

@@ -2,6 +2,614 @@
 Changelog for package jsk_travis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.20 (2021-04-28)
+-------------------
+* fix travis to work (again....) (`#419 <https://github.com/jsk-ros-pkg/jsk_travis/issues/419>`_)
+
+  * pip install -I pip<9 does not work on hydro
+    * reinstall pip-9 from pypi, otherwise
+  ```
+  ImportError: Entry point ('console_scripts', 'pip2') not found
+  ```
+  occurs
+  * instal python >= 2.7.9 on ros-ubuntu:14.04-base
+  * hydro does not like lates pip install....
+  * apply turtlesim/CATKIN_IGNORE for all noetic tests
+  * fix hydro pip remove
+  * 20.04 needs pip
+  * hydro does not have python >= 2.7.9, so it fails on pip install, comment out pip depends
+  * do not error when pip/python is not installed
+  * set noninteractive before apt-get install
+  * On ubuntu >= 18, does not need to install pip
+  * pypa requires python >= 2.7.9, where trusty uses pyton 2.7.6, install ppa veresion of python2.7.13
+  * since .travis.yml move to bionic, do not run indigo/jade on travis
+  * update .travis.yml to bionic
+  * --user install is not supported
+  * mkdir -p /root/.cache/pip/
+  * fix travis problem, fix apt-ag-cacher, could not install get-pip.py, git clone fails of protocol.version2...
+  add python-pip, on 14.04 get-pip.py fils with
+  +curl https://bootstrap.pypa.io/pip/2.7/get-pip.py
+  +sudo python -
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+  Dload  Upload   Total   Spent    Left  Speed
+  100 1863k  100 1863k    0     0  10.9M      0 --:--:-- --:--:-- --:--:-- 10.9M
+  DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support pip 21.0 will remove support for this functionality.
+  WARNING: The directory '/home/travis/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
+  /tmp/tmpqCDyYn/pip.zip/pip/_vendor/urllib3/util/ssl\_.py:424: SNIMissingWarning: An HTTPS request has been made, but the SNI (Server Name Indication) extension to TLS is not available on this platform. This may cause the server to present an incorrect TLS certificate, which can cause validation failures. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  /tmp/tmpqCDyYn/pip.zip/pip/_vendor/urllib3/util/ssl\_.py:164: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  ERROR: Could not find a version that satisfies the requirement pip<21.0 (from versions: none)
+  ERROR: No matching distribution found for pip<21.0
+  /tmp/tmpqCDyYn/pip.zip/pip/_vendor/urllib3/util/ssl\_.py:164: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+
+  * install decorator==4.4.2
+* Contributors: Kei Okada, Shingo Kitagawa
+
+0.5.19 (2021-03-09)
+-------------------
+* update 2.7/get-pip.py url (`#416 <https://github.com/jsk-ros-pkg/jsk_travis/issues/416>`_)
+
+  fix https://bootstrap.pypa.io/2.7/get-pip.py to
+      https://bootstrap.pypa.io/pip/2.7/get-pip.py
+  ```
+  +curl https://bootstrap.pypa.io/2.7/get-pip.py
+  +sudo python -
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+  Dload  Upload   Total   Spent    Left  Speed
+  100   936  100   936    0     0  11036      0 --:--:-- --:--:-- --:--:-- 11142
+  Hi there!
+  The URL you are using to fetch this script has changed, and this one will no
+  longer work. Please use get-pip.py from the following URL instead:
+  https://bootstrap.pypa.io/pip/2.7/get-pip.py
+  Sorry if this change causes any inconvenience for you!
+  We don't have a good mechanism to make more gradual changes here, and this
+  renaming is a part of an effort to make it easier to us to update these
+  scripts, when there's a pip release. It's also essential for improving how we
+  handle the `get-pip.py` scripts, when pip drops support for a Python minor
+  version.
+  There are no more renames/URL changes planned, and we don't expect that a need
+  would arise to do this again in the near future.
+  Thanks for understanding!
+  - Pradyun, on behalf of the volunteers who maintain pip.
+  ```
+* Contributors: Kei Okada
+
+0.5.18 (2021-01-27)
+-------------------
+* use 2.7 get-pip.py to install pip 20.3.4 to run  on python2.7 (`#414 <https://github.com/jsk-ros-pkg/jsk_travis/issues/414>`_)
+  * use 2.7 get-pip.py because pip 21.0 is released, which droped python 2.7 support in january 2021.
+    https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+* Contributors: Shingo Kitagawa
+
+0.5.17 (2020-09-29)
+-------------------
+* move to .travis directory to load travis_utils.sh (`#412 <https://github.com/jsk-ros-pkg/jsk_travis//issues/412>`_)
+* Contributors: Kei Okada
+
+0.5.16 (2020-09-28)
+-------------------
+* fix last release 0.5.15 (`#411 <https://github.com/jsk-ros-pkg/jsk_travis//issues/411>`_)
+
+  * use GLOB_RECOURSE to install scripts in test code
+  * source travis_utils.sh from .travis.sh directory
+  * mv all scripts into .travis and run tests
+
+* Contributors: Kei Okada
+
+0.5.15 (2020-09-24)
+-------------------
+* docker: install common packages for '-pcl', and reenable CACHEBUST (`#410 <https://github.com/jsk-ros-pkg/jsk_travis/issues/410>`_)
+
+  * add travis_utils
+  * clean up travis results
+
+* Contributors: Kei Okada
+
+0.5.14 (2020-09-08)
+-------------------
+* add /workspace/.chainer cache directory (`#409 <https://github.com/jsk-ros-pkg/jsk_travis/issues/409>`_)
+
+* Contributors: Kei Okada
+
+0.5.13 (2020-08-27)
+-------------------
+* Fix for new jenkins (`#407 <https://github.com/jsk-ros-pkg/jsk_travis/issues/407>`_)
+
+  * check if 'number' in item['executable']
+  * add comment when j.reconfig_job fails
+  * disable CACHEBUST, use --pull --no-cache to build, https://developer.devada.com/docs/appendix-a-troubleshooting-answerhub-docker-startup
+
+* Contributors: Kei Okada
+
+0.5.12 (2020-06-28)
+-------------------
+* check USE_JENKINS=true ROS_DISTRO=noetic without DOCKER_IMAGE_JENKINS (`#405 <https://github.com/jsk-ros-pkg/jsk_travis/issues/405>`_)
+
+  * install python3-pip for 20.04
+  * add python-gdown-pip to run_depend to check pip install
+  * qt5/moc does not work on docker (https://stackoverflow.com/questions/56319830/error-when-building-qt-app-in-a-recent-docker)
+  * add CATKIN_TOOLS_BUILD_OPTIONS for debug
+  * ros_tutorials now support noetic-devel
+  * install 'python' for noetic
+  * check USE_JENKINS=true ROS_DISTRO=noetic without DOCKER_IMAGE_JENKINS
+
+* Contributors: Kei Okada
+
+0.5.11 (2020-05-28)
+-------------------
+* update rosdep-install.sh for indigo, which does not read <*_depend condition="$ROS_PYTHON=VERSION == 2"> format (`#403 <https://github.com/jsk-ros-pkg/jsk_travis/issues/403>`_)
+
+  * remove condition=ROS_PYTHON=VERSION=2 for indigo
+  * use scipy instead of numpy, because numpy is already installed
+  * show debug message to stderr
+  * check if rosdep works with format=3
+  * add more travis_time_start/travis_time_end
+
+* Fix 0.5.10, which does not work for melodic/noetic (`#402 <https://github.com/jsk-ros-pkg/jsk_travis/issues/402>`_)
+
+  * add USE_DOCKER=true ROS_DISTRO=noetic
+  * do not print debug message end of docker.sh
+  * fix when ROS_PYTHON_VERSION is not set
+  * add USE_DOCKER=true ROS_DISTRO=noetic
+
+* Contributors: Kei Okada
+
+0.5.10 (2020-05-02)
+-------------------
+* add support noetic/focal (`#401 <https://github.com/jsk-ros-pkg/jsk_travis/issues/401>`_)
+* Contributors: Kei Okada
+
+0.5.9 (2020-04-03)
+------------------
+* output all messages to sys.stderr (`#398 <https://github.com/jsk-ros-pkg/jsk_travis/issues/398>`_)
+* Contributors: Kei Okada
+
+0.5.8 (2020-04-02)
+------------------
+* Fix utf-8/ascii errors (`#397 <https://github.com/jsk-ros-pkg/jsk_travis/issues/397>`_))
+
+  * fix for https://github.com/start-jsk/rtmros_common/pull/1089
+  * PYTHONIOENCODING=utf-8 fix utf-8
+  * support python3
+  * use python-jenkins 1.7.0
+  * set unicode for print console output
+  * add DEBUG_TRAVIS_PYTHON
+
+* Contributors: Kei Okada
+
+0.5.7 (2019-12-11)
+------------------
+* Enable to pass additional environment variables to docker on travis/jenkins (`#395 <https://github.com/jsk-ros-pkg/jsk_travis/issues/395>`_)
+
+  * Format docker env-file in case it already exists (I haven't observed this phenomenon. Just in case)
+  * Each job on jenkins should have unique env-file
+  * Each job on travis should have unique env-file
+  * Add doc of ADDITIONAL_ENV_TO_DOCKER
+  * Enable to pass additional environment variables to jenkins docker
+  * Add test of ADDITIONAL_ENV_TO_DOCKER
+
+* Contributors: Shun Hasegawa
+
+0.5.6 (2019-11-11)
+------------------
+* Suppress the output of run_tests on jenkins (`#390 <https://github.com/jsk-ros-pkg/jsk_travis/issues/390>`_)
+* Don't use HTTP proxy for HTTPS urls for apt-cacher-ng (`#389 <https://github.com/jsk-ros-pkg/jsk_travis/issues/389>`_)
+  * To fix https://github.com/jsk-ros-pkg/jsk_travis/pull/388#issuecomment-549735323 and https://github.com/start-jsk/rtmros_common/pull/1077#issuecomment-549629846
+
+* Contributors: Shun Hasegawa
+
+0.5.5 (2019-10-26)
+------------------
+* Fix exitting from script and show ccache stat after build as well (`#385 <https://github.com/jsk-ros-pkg/jsk_travis/issues/385>`_)
+  * Show cache after docker
+  * Call 'return' instead of 'exit' after 'docker run' and 'travis_jenkins.py'
+  * Show ccache stat after build as well as before build
+
+* Contributors: Yuto Uchimi
+
+0.5.4 (2019-10-23)
+------------------
+* supress the output of run_tests (`#386 <https://github.com/jsk-ros-pkg/jsk_travis/issues/386>`_)
+  * catkin Make Args should only be run_tests, as --catkin-make-args stops with -- just after run_tests in `ros-planning/moveit_ci#18 <https://github.com/ros-planning/moveit_ci/issues/18>`_.
+  * catkin-make-args should be run_tests only
+* Contributors: Kei Okada, Shun Hasegawa
+
+0.5.3 (2019-08-28)
+------------------
+* Share only downloaded data in ~/.ros/ among all docker process on jenkins (`#384 <https://github.com/jsk-ros-pkg/jsk_travis/issues/384>`_)
+* Contributors: Yuto Uchimi
+
+0.5.2 (2019-08-13)
+------------------
+* fix docker/Makefile (`#382 <https://github.com/jsk-ros-pkg/jsk_travis/issues/382>`_)
+
+  * compile base file first
+  * fix CACHEBUST=$(date), which does not work on make command
+
+* fix dpkg-deb error on 12.04 (`#382 <https://github.com/jsk-ros-pkg/jsk_travis/issues/382>`_)
+
+  * hold python-vcstools for hydro
+  * show dpkg version
+  * remove debug code to show apt-cache-ng log
+
+* Contributors: Kei Okada
+
+0.5.1 (2019-08-01)
+------------------
+* use --merge-replace -y for .travis.rosinstall.$ROS_DISTRO (`#381 <https://github.com/jsk-ros-pkg/jsk_travis/issues/381>`_)
+* Contributors: Kei Okada
+
+0.5.0 (2019-06-25)
+------------------
+* more fix for newer jenkins (`#378 <https://github.com/jsk-ros-pkg/jsk_travis/issues/378>`_, `#380 <https://github.com/jsk-ros-pkg/jsk_travis/issues/380>`_, `#379 <https://github.com/jsk-ros-pkg/jsk_travis/issues/379>`_)
+
+  * install apt-utils to remove debconf: delaying package configuration, since apt-utils is not installed warnings
+  * Update README.md for newer docker images
+  * fix docker/Makefile
+  * use x.04-base and use them, for not to rebuild -pcl* everyday
+  * use TRAVIS_JENKINS_UNIQUE_ID for DOCKER_CONTAINER_NAME
+  * update to use python-jenkins 1.4.0 and get build number from get_queue_item
+  * add docker/Makefile
+  * Sometimes two jobs (<number> and false in TRAVIS_PULL_REQUEST) runs sometimes and get same build_number
+  * rename docker container with TRAVIS_JENKINS_UNIQUE_ID if conflicts
+  * Dockerfile.ros-ubuntu:14.04-pcl*: make sure to install pytohn-vtk and tcl-vtk before installing pcl-ros, sometimes it errors like
+  ```
+  The following packages have unmet dependencies:
+  python-vtk : Depends: tcl-vtk but it is not going to be installed
+  E: Unable to correct problems, you have held broken packages.
+  ERROR: the following rosdeps failed to install
+  apt: command [sudo -H apt-get install -y python-vtk] failedw
+  ```
+  * install python-vtk and tcl-vtk in ros-ubuntu:14.04
+  * add ros-ubuntu:1x.04-pcl for 16/18
+  * wait few seconds to run docker stop
+  * retry apt-get update and install untail success
+  * display DOCKER_IMAGE_JENKINS
+  * fix setup dir by distro : https://github.com/jsk-ros-pkg/jsk_travis/commit/781e557ffd08417c4b90dc0100fbcc216ba7aba8
+  * fix sudo apt-get update -qq || echo Ignore error of apt-get update line
+  * add ros-ubuntu:14.04-pcl1.8 and ros-ubuntu:14.04-pcl
+  * docker/ 14.04 uses libvtk5-dev
+  * need to add -y for apt-get dist-upgrade
+  * fix docker file path
+
+* Contributors: Kei Okada
+
+0.4.43 (2019-06-21)
+-------------------
+* enable pip/apt cache on Jenkins and Docker on Travis (`#377 <https://github.com/jsk-ros-pkg/jsk_travis/issues/377>`_ )
+
+  * rosdep respect ROSDEP_ADDITIONAL_OPTIONS for -q
+  * inclease NUMBER_OF_LOGS_TO_KEEP
+  * do not remove WORKSPACE in jenkins
+  * more info on job description
+  * setup cache dir by distro
+  * remove redundant/unnesseary build settings from travis.yml
+  * travis_jenkins.py: add longer container name
+  * use TRAVIS_BUILD_WEB_URL anad TRAVIS_BUILD_JOB_URL
+  * fix jenkins job description
+  * cache HOME/apt-cacher-ng for docker on travis
+  * install man-db within docker to reduce apt install time
+  * force disable -q on pip of rosdep
+  * store .cache to /root for travis
+  * jenkins uses /root/.cache/pip
+
+* fix for newer jenkins server (`#376 <https://github.com/jsk-ros-pkg/jsk_travis/issues/376>`_)
+
+  * add EoL repository for jade
+  * travis.sh setup EoL repository
+  * 12.04 needs make command
+  * remove pip install -U dlib, which is not available on 12.04
+  * add Dockerfile for ros-ubuntu 12.04/16.04/18.04
+  * rename /export/data1 -> /data/cache
+  * add sudo to travis_jenkins.py
+  * .travis.sh: do not use CI_SOURCE_PATH before assignment
+  * travis.sh: setup_pip_cache : do not fail if grep whl failed
+  * build docker image within travis_jenkins.py
+  * fix for newer jenkins server
+  * Update testing repository URL
+  * add CATKIN_IGNORE, whcih wrongly removed at https://github.com/jsk-ros-pkg/jsk_travis/commit/b8fe0112dd6f06b0ddc6b6f442c3f9f2d22f75c7
+
+* add CMAKE_DEVELOPER_ERROR option (`#373 <https://github.com/jsk-ros-pkg/jsk_travis/issues/373>`_)
+
+  * rename DEVELOPER_ERROR -> CMAKE_DEVELOPER_ERROR
+  * add DEVELOPER_ERROR option for jsk_travis
+
+* use pv command to keep inform while rosdep install (`#370 <https://github.com/jsk-ros-pkg/jsk_travis/issues/370>`_)
+
+  * .cache/pip can not remove due to devicy busy
+  * display ccache/cache after_script
+  * pass .cache/pip to travis
+  * show caches
+  * package.xml: remove dlib, which is not able to compile on 12.04
+  * revert wrong commit
+  * show cached pip packages in home directory
+  * use pv command to keep inform while rosdep install, Closes No output has been received in the last 10m0s error
+
+* Fix PR `#367 <https://github.com/jsk-ros-pkg/jsk_travis/issues/367>`_, which is not completed (`#369 <https://github.com/jsk-ros-pkg/jsk_travis/issues/369>`_)
+
+  * add cache:directories:.cache/pip
+  * cleanup start/end region
+  * copy local pip cache(.cache/pip) to /root and back to local directory for docker cache
+
+* installing pip sometimes very slow (`#367 <https://github.com/jsk-ros-pkg/jsk_travis/issues/367>`_)
+
+  * setup pip cache
+  * fix travis matrix for testing
+  * installing pip sometimes very slow
+
+* Contributors: Kei Okada, Shingo Kitagawa, Yuto Uchimi
+
+0.4.42 (2019-02-05)
+-------------------
+* use --include-eol-distros on rosdep for EOF ros distros (i.e. jade) (`#364 <https://github.com/jsk-ros-pkg/jsk_travis/issues/364>`_)
+* Contributors: Yasuhiro Ishiguro
+
+0.4.41 (2018-12-27)
+-------------------
+* Increase maximum size of ccache to 30GB (`#363 <https://github.com/jsk-ros-pkg/jsk_travis/issues/363>`_)
+* Contributors: Yuto Uchimi
+
+0.4.40 (2018-11-10)
+-------------------
+* put fix_error branch on master, see `#361 <https://github.com/jsk-ros-pkg/jsk_travis/issues/361>`_ (`#362 <https://github.com/jsk-ros-pkg/jsk_travis/issues/362>`_)
+  * fix dpkg-deb: error: archive has premature member 'control.tar.xz' before 'control.tar.gz' `#9361 <https://github.com/jsk-ros-pkg/jsk_travis/issues/9361>`_
+  https://github.com/travis-ci/travis-ci/issues/9361#issuecomment-408431262
+  * this has been released as rosdep 0.13.0 -> https://github.com/ros-infrastructure/rosdep/pull/612#issuecomment-436774123
+* Contributors: Kei Okada
+
+0.4.39 (2018-10-26)
+-------------------
+* Enable rosdep quiet mode
+  * remove redundant messages from rosdep install
+  * apply https://github.com/ros-infrastructure/rosdep/pull/612 to enable rosdep quiet mode
+* Contributors: Kei Okada
+
+0.4.38 (2018-07-13)
+-------------------
+* Add melodic `#358 <https://github.com/jsk-ros-pkg/jsk_travis/issues/358>`_
+  * add DEBIAN_FRONTEND=noninteractive to travis.sh, see https://api.travis-ci.org/v3/job/402555750/log.txt for error case
+  * add test for melodic
+  * add support for melodic
+* Contributors: Kei Okada
+
+0.4.37 (2018-04-27)
+-------------------
+* Merge pull request `#355 <https://github.com/jsk-ros-pkg/jsk_travis/issues/355>`_ from wkentaro/pip9
+  Install pip<10
+* Install pip<10
+  Currently pip==10.0.1 is installed.
+  https://github.com/jsk-ros-pkg/jsk_recognition/pull/2280#issuecomment-384681527
+* Contributors: Kei Okada, Kentaro Wada
+
+0.4.36 (2018-04-24)
+-------------------
+* Merge pull request `#354 <https://github.com/jsk-ros-pkg/jsk_travis/issues/354>`_ from k-okada/fix_jenkins
+  need to upgrade when install python-jenkins
+* get-pip.py installs pip, so we do not need pip install pip
+* use 0.4.16 of python-jenkins
+* need to upgrade when install python-jenkins
+* Contributors: Kei Okada
+
+0.4.35 (2017-12-30)
+-------------------
+* Merge pull request `#353 <https://github.com/jsk-ros-pkg/jsk_travis/issues/353>`_ from k-okada/exit_rosdep
+  when rosdep install is called with -r, do not exit with 1
+* when rosdep install is called with -r, do not exit with 1
+* Merge pull request `#351 <https://github.com/jsk-ros-pkg/jsk_travis/issues/351>`_ from furushchev/fix-eof-error
+  travis.sh: fix EOFError
+* travis.sh: fix EOFError
+* Contributors: Furushchev, Kei Okada
+
+0.4.34 (2017-11-01)
+-------------------
+* travis.sh: use get-pip.py to get pipt (`#349 <https://github.com/jsk-ros-pkg/jsk_travis/issues/349>`_)
+* Contributors: Yuki Furuta
+
+0.4.33 (2017-08-30)
+-------------------
+* Fix typo about docker pulling DOCKER_IMAGE_JENKINS (`#346 <https://github.com/jsk-ros-pkg/jsk_travis/issues/346>`_)
+* Contributors: Kentaro Wada
+
+0.4.32 (2017-08-29)
+-------------------
+* Run docker pull to get latest docker image if possible (`#345 <https://github.com/jsk-ros-pkg/jsk_travis/issues/345>`_)
+* Support sudo: false of Travis option (`#344 <https://github.com/jsk-ros-pkg/jsk_travis/issues/344>`_)
+* Documentize NOT_TEST_INSTALL (`#343 <https://github.com/jsk-ros-pkg/jsk_travis/issues/343>`_)
+* Support testing on lunar (`#342 <https://github.com/jsk-ros-pkg/jsk_travis/issues/342>`_)
+* Contributors: Kentaro Wada
+
+0.4.31 (2017-08-19)
+-------------------
+* use http instaed of https (`#341 <https://github.com/jsk-ros-pkg/jsk_travis/issues/341>`_)
+* Contributors: Kei Okada
+
+0.4.30 (2017-08-06)
+-------------------
+* job_name = 'jenkins+ job_name + TRAVIS_REPO_SLUG' (`#340 <https://github.com/jsk-ros-pkg/jsk_travis/issues/340>`_)
+* Contributors: Kei Okada
+
+0.4.29 (2017-08-05)
+-------------------
+* filename must be less than 255 length (`#339 <https://github.com/jsk-ros-pkg/jsk_travis/issues/339>`_)
+* Contributors: Kei Okada
+
+0.4.28 (2017-08-05)
+-------------------
+* run travis without rosdep -r (`#337 <https://github.com/jsk-ros-pkg/jsk_travis/issues/337>`_)
+  * add -v rosdep options
+  * add ros_tutorials to workspece for test
+  * run travis without rosdep -r
+
+* to run docker, we do not need -ti option (`#338 <https://github.com/jsk-ros-pkg/jsk_travis/issues/338>`_)
+  -i, --interactive             Keep STDIN open even if not attached
+  -t, --tty                     Allocate a pseudo-TTY
+* Contributors: Kei Okada
+
+0.4.27 (2017-07-18)
+-------------------
+* apt-get install patch command (`#332 <https://github.com/jsk-ros-pkg/jsk_travis/issues/332>`_ )
+* Support ROSDEP_ADDITIONAL_OPTIONS on Jenkins (`#333 <https://github.com/jsk-ros-pkg/jsk_travis/issues/333>`_)
+* use language: c++ , to avoid custom python (`#334 <https://github.com/jsk-ros-pkg/jsk_travis/issues/334>`_)
+* Contributors: Kei Okada, Kentaro Wada
+
+0.4.26 (2017-07-01)
+-------------------
+* Correct exit status in rosdep-install.sh (`#331 <https://github.com/jsk-ros-pkg/jsk_travis/issues/331>`_ )
+* Add option to use custom docker image in Jenkins job (`#330 <https://github.com/jsk-ros-pkg/jsk_travis/issues/330>`_ )
+  * Update README for DOCKER_IMAGE_JENKINS env
+  * Add DOCKER_IMAGE_JENKINS option
+
+* Run rosdep init when required (`#327 <https://github.com/jsk-ros-pkg/jsk_travis/issues/327>`_)
+  * This is necessary to use ros:indigo docker image by DOCKER_IMAGE env,
+     because rosdep init has already been called.
+* Contributors: Kentaro Wada
+
+0.4.25 (2017-02-17)
+-------------------
+* Use X server of travis node (`#323 <https://github.com/jsk-ros-pkg/jsk_travis/issues/323>`_)
+  * [.travis.yml] allow failures on jade / kinetic gazebo test
+  * enable gazebo camera test
+  * Use host X11 server for docker
+* [travis_jenkins.py] delete: remove containers more than 48 hours ago (`#324 <https://github.com/jsk-ros-pkg/jsk_travis/issues/324>`_)
+  * [README.md] add description of DOCKER_RUN_OPTION
+  * [travis_jenkins.py] delete: remove containers more than 48 hours ago
+* Contributors: Kei Okada, Yuki Furuta
+
+0.4.24 (2017-02-14)
+-------------------
+* [travis.sh] fix typo EXTRA_DEBS -> EXTRA_DEBS
+* Contributors: Yuki Furuta
+
+0.4.23 (2017-02-08)
+-------------------
+* [dummy.xorg.conf] update for supporting GLX
+* Contributors: Yuki Furuta
+
+0.4.22 (2016-10-21)
+-------------------
+* Fix too many logs caused in travis_jenkins.py (`#319 <https://github.com/jsk-ros-pkg/jsk_travis/issues/319>`_ from wkentaro/docker-ps-a)
+
+  * https://github.com/jsk-ros-pkg/jsk_travis/commit/be5a632999c069e107773b6a0347bee51bae0d89
+
+* Enable gazebo test (`#316 <https://github.com/jsk-ros-pkg/jsk_travis/issues/316>`_)
+* [travis_watchdog.py] add watchdog for travis and kill orphan docker container on jenkins (`#317 <https://github.com/jsk-ros-pkg/jsk_travis/issues/317>`_)
+* [travis_jenkins.py] enable testing jsk_travis repository on jenkins (`#315 <https://github.com/jsk-ros-pkg/jsk_travis/issues/315>`_)
+* [travis.sh] fix error "too many arguments" at line 64-65 (`#314 <https://github.com/jsk-ros-pkg/jsk_travis/issues/314>`_)
+* [docker.sh] set +x while executing travis_wait function on docker (`#312 <https://github.com/jsk-ros-pkg/jsk_travis/issues/312>`_)
+
+* Contributors: Kei Okada, Kentaro Wada, Yuki Furuta
+
+0.4.21 (2016-09-21)
+-------------------
+* Check jsk_travis version on Travis
+* Contributors: Kentaro Wada
+
+0.4.20 (2016-09-14)
+-------------------
+* check if install/share/pkg exists (`#310 <https://github.com/jsk-ros-pkg/jsk_travis/issues/310>`_)
+* Contributors: Kei Okada
+
+0.4.19 (2016-09-10)
+-------------------
+* support docker on travis (`#307 <https://github.com/jsk-ros-pkg/jsk_travis/issues/307>`_)
+* Prettify the logging output at checking jsk_travis version (`#306 <https://github.com/jsk-ros-pkg/jsk_travis/issues/306>`_)
+  * Prettify the logging output at checking jsk_travis version
+  * Describe about not supported downgrading jsk_travis in README
+* Add version information about jsk_travis (`#305 <https://github.com/jsk-ros-pkg/jsk_travis/issues/305>`_)
+* Contributors: Kei Okada, Kentaro Wada, Yuki Furuta
+
+0.4.18 (2016-08-17)
+-------------------
+* Set CATKIN_TOOLS_BUILD_OPTIONS after the installation of catkin-tools (`#302 <https://github.com/jsk-ros-pkg/jsk_travis/issues/302>`_)
+* Contributors: Kentaro Wada
+
+0.4.17 (2016-08-12)
+-------------------
+* Use travis_wait for catkin_build which does not outputs more than 10min (`#298 <https://github.com/jsk-ros-pkg/jsk_travis/issues/298>`_) This is enough for #296
+* [travis.sh] add -iv for hydro, --limit-status-rate 0.002 to avoid no output 10min (`#296 <https://github.com/jsk-ros-pkg/jsk_travis/issues/296>`_)
+* Describe about CATKIN_TOOLS_BUILD_OPTIONS for change in `#297 <https://github.com/jsk-ros-pkg/jsk_travis/issues/297>`_ (`#301 <https://github.com/jsk-ros-pkg/jsk_travis/issues/301>`_)
+* Set default --no-status to CATKIN_TOOLS_BUILD_OPTIONS (`#297 <https://github.com/jsk-ros-pkg/jsk_travis/issues/297>`_)
+  This commit fixes belows:
+  - Typo "ROS_DISTRO" should be "$ROS_DISTRO", but checking catkin-tools
+  version is better.
+  - Replace `--limit-status 0.002` with `--no-status` the status limit
+  should be specified in .travis.yml like
+  `export CATKIN_TOOLS_BUILD_OPTIONS="-iv --summarize --limit-status 0.001"`.
+* [travis.sh] fix typo (`#299 <https://github.com/jsk-ros-pkg/jsk_travis/issues/299>`_)
+  - Fix typo in generating job name: a-f -> a-z (`#294 <https://github.com/jsk-ros-pkg/jsk_travis/issues/294>`_)
+* Contributors: Yuki Furuta, Kentaro Wada
+
+0.4.16 (2016-08-07)
+-------------------
+* Fix ubuntu distro name in job_name (`#292 <https://github.com/jsk-ros-pkg/jsk_travis/issues/292>`_)
+  * Set identical job name with BEFORE_SCRIPT & ROS_REPOSITORY_PATH
+  * Fix ubuntu distro name in job_name
+* Refactor travis.sh with newline in if block (`#291 <https://github.com/jsk-ros-pkg/jsk_travis/issues/291>`_)
+* Contributors: Kentaro Wada
+
+0.4.15 (2016-08-03)
+-------------------
+* Remove no need grepping with the default CATKIN_TOOLS_BUILD_OPTIONS (`#289 <https://github.com/jsk-ros-pkg/jsk_travis/issues/289>`_)
+  The default option is `--summarize --no-status` so there is no  `Symlinking..` output, so we can remove this line.
+* Contributors: Kentaro Wada
+
+0.4.14 (2016-07-29)
+-------------------
+* Use catkin 0.6.12 to fix `#286 <https://github.com/jsk-ros-pkg/jsk_travis/issues/286>`_ (`#287 <https://github.com/jsk-ros-pkg/jsk_travis/issues/287>`_)
+* Contributors: Kentaro Wada
+
+0.4.13 (2016-07-21)
+-------------------
+* Stop using HEAD version catkin on hydro (`#285 <https://github.com/jsk-ros-pkg/jsk_travis/issues/285>`_)
+* Contributors: Kentaro Wada
+
+0.4.12 (2016-07-21)
+-------------------
+* Stop using HEAD version catkin on non hydro distros (`#284 <https://github.com/jsk-ros-pkg/jsk_travis/issues/284>`_)
+* Contributors: Kentaro Wada
+
+0.4.11 (2016-06-24)
+-------------------
+* Stop using progressbar in testing on Jenkins (`#281 <https://github.com/jsk-ros-pkg/jsk_travis/issues/281>`_)
+* Contributors: Kentaro Wada
+
+0.4.10 (2016-06-02)
+-------------------
+* Option for how many logs are kept: NUMBER_OF_LOGS_TO_KEEP (`#278 <https://github.com/jsk-ros-pkg/jsk_travis/issues/278>`_)
+* Contributors: Kentaro Wada
+
+0.4.9 (2016-05-30)
+------------------
+* Fix `#275 <https://github.com/jsk-ros-pkg/jsk_travis/issues/275>`_ Set timeout for sudo docker ps -a command (`#276 <https://github.com/jsk-ros-pkg/jsk_travis/issues/276>`_)
+* Show progressbar for Jenkins job (`#270 <https://github.com/jsk-ros-pkg/jsk_travis/issues/270>`_)
+* Exit soon when Jenkins server is down (`#269 <https://github.com/jsk-ros-pkg/jsk_travis/issues/269>`_)
+* Exit soon when having unexpected error on jenkins job (`#271 <https://github.com/jsk-ros-pkg/jsk_travis/issues/271>`_)
+  * Exit soon when Jenkins server is down
+  * Exit soon when having unexpected error on jenkins job
+* Fetch origin quietly via git in 'travis_jenkins.py' (`#273 <https://github.com/jsk-ros-pkg/jsk_travis/issues/273>`_)
+* Stable testing with retry=3 in example.test (`#272 <https://github.com/jsk-ros-pkg/jsk_travis/issues/272>`_)
+* Exit soon when jenkins url is not found (404) (`#268 <https://github.com/jsk-ros-pkg/jsk_travis/issues/268>`_)
+  This lets us more productive by shorten the waiting time for 2h when
+  Jenkins is dead.
+* Contributors: Kentaro Wada
+
+0.4.8 (2016-05-21)
+------------------
+* Refactor: Abolish ROSWS and BUILDER environmental variables (`#261 <https://github.com/jsk-ros-pkg/jsk_travis/issues/261>`_)
+  * Does not use meaninglessly ROSWS and BUILDER env
+  * Remove deprecated ROSWS and BUILDER env
+  * Remove meaningless BUILDER env in 'travis.yml'
+* Fix ignored rosdep option in 'rosdep-install.sh' (`#266 <https://github.com/jsk-ros-pkg/jsk_travis/issues/266>`_)
+* Move image and dia files for README to _media directory (`#262 <https://github.com/jsk-ros-pkg/jsk_travis/issues/262>`_)
+* Add CATKIN_TOOLS_BUILD_OPTIONS env (`#263 <https://github.com/jsk-ros-pkg/jsk_travis/issues/263>`_)
+* Contributors: Kentaro Wada
+
+0.4.7 (2016-05-19)
+------------------
+* Cache ~/.ros/data dir in jenkins (#259)
+* Env CATKIN_TOOLS_CONFIG_OPTIONS for --blacklist/--whitelist options (#258)
+* Add --verbose --all options for catkin_test_results (#257)
+* Contributors: Kentaro Wada
+
 0.4.6 (2016-05-01)
 ------------------
 * Fix `#253 <https://github.com/jsk-ros-pkg/jsk_travis/issues/253>`_ `#254 <https://github.com/jsk-ros-pkg/jsk_travis/issues/254>`_: Pipe failed return status on grepping (`#255 <https://github.com/jsk-ros-pkg/jsk_travis/issues/255>`_)

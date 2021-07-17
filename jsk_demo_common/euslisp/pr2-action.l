@@ -278,8 +278,8 @@
   (send *ri* :wait-interpolation))
 
 (defun generate-slide-path
-  "originally defined at jsk_smart_gui/src/utils.l"
   (start-point point1 point2 path-length &key (div 10))
+  "originally defined at jsk_smart_gui/src/utils.l"
   (let* ((di (normalize-vector (v- point2 point1)))
          (ln (make-line point1 point2))
          (fp (send ln :point (send ln :foot start-point))))
@@ -293,8 +293,8 @@
       (nreverse ret))))
 
 (defun generate-circle-path
-  "originally defined at jsk_smart_gui/src/utils.l"
   (start-point point1 point2 angle &key (div 20))
+  "originally defined at jsk_smart_gui/src/utils.l"
   (let* ((axis (normalize-vector (v- point1 point2)))
    (ln (make-line point1 point2))
    (fp (send ln :point (send ln :foot start-point))))
@@ -376,6 +376,24 @@
     ;; finalize
     *ret*))
 
+(defun move-arm ;;TODO::choose openrave or eus
+  (arm coords &rest args &key (move-robot t) (wait-interpolation t) (rotation-axis :z) (debug nil)
+       (sec 2000) (use-torso 0.005) (record-ik nil) &allow-other-keys)
+  (unless
+      (send* *pr2* :inverse-kinematics coords :move-arm arm :rotation-axis rotation-axis
+             :use-torso use-torso
+             :revert-if-fail nil :debug-view debug args)
+    (when record-ik
+      (setq *ik-fail-av*  (send *pr2* :angle-vector))
+      (setq *ik-fail-coords*  (send coords :copy-worldcoords))
+      (dump-loadable-structure (format nil "ik-fail-~d.l" (send (ros::time-now) :to-sec))
+                               *ik-fail-coords* *ik-fail-av*))
+    (return-from move-arm nil))
+  (when move-robot
+    (send *ri* :angle-vector (send *pr2* :angle-vector) sec)
+    (when wait-interpolation (send *ri* :wait-interpolation)))
+  t)
+
 (defun move-fridge-traj (hand cds-traj
                               ;; &key ((:rotation-axis ra) :z) (use-torso 0.0025)
                               &key ((:rotation-axis ra) :z) (use-torso nil)
@@ -387,7 +405,7 @@
 	 (time-tick (/ (* (- func-time 16) 1000) (length lst)));;changing opening-door speed
 	 avs tms)
     (when move-robot  ;; open-gripper
-      (send *ri* :move-gripper hand 0.09 :wait nil))
+      (send *ri* :stop-grasp hand :wait nil))
     (when fix-waist-z
       (unless (numberp fix-waist-z) (setq fix-waist-z 130))
       (send *pr2* :torso :waist-z :joint-angle fix-waist-z))
@@ -466,10 +484,10 @@
 (warn ";; define grasp-can-single")
 (defun grasp-can-single (obj &key (rotation 0) (use-arm :rarm) (grasp-depth 35)(func-time 7))
   (let (via1 via2 tar orig-av (mvt (* (/ (- func-time 4) 4.0) 1000)));; mvt is about 3000. we assume it takes 4 sec other than sending :angle-vector, and there are 4 :angle-vector in this funciton
-    (send *ri* :stop-grasp use-arm)
+    (send *ri* :stop-grasp use-arm :wait t)
     (send *tfb* :send-transform
           (send (send *pr2* :worldcoords) :transformation (send obj :worldcoords))
-          "/base_footprint" "/objecta_pose_frame")
+          "/base_footprint" "/object_pose_frame")
     (setq orig-av (send *ri* :state :potentio-vector))
 
     (when *use-arm-navigation*
@@ -492,11 +510,11 @@
 
     ;; publish tf
     (send *tfb* :send-transform
-          via1 "/base_footprint" "/objecta_pose_frame_via1")
+          via1 "/base_footprint" "/object_pose_frame_via1")
     ;;(send *tfb* :send-transform
     ;;via2 "/base_footprint" "/objecta_pose_frame_via2")
     (send *tfb* :send-transform
-          via2 "/base_footprint" "/objecta_pose_frame_via2")
+          via2 "/base_footprint" "/object_pose_frame_via2")
 
     ;; move to via1
     (send *pr2* use-arm :inverse-kinematics
@@ -504,7 +522,7 @@
           :rotation-axis t)
     (send *tfb* :send-transform
           (send (send *pr2* :worldcoords) :transformation (send *pr2* use-arm :end-coords))
-          "/base_footprint" "/objecta_pose_end_coords")
+          "/base_footprint" "/object_pose_end_coords")
 
     ;;(send *ri* :angle-vector (send *pr2* :angle-vector))
     ;;(send *ri* :wait-interpolation))
@@ -928,8 +946,8 @@
        (send *ri* :go-pos-unsafe 0.185 -0.25 0) ;; g-rarm
        )
       (:larm
-       (send *ri* :go-pos-unsafe 0 0 rotation) ;; g-rarm
-       (send *ri* :go-pos-unsafe 0.33 -0.05 0) ;; g-rarm
+       (send *ri* :go-pos-unsafe 0 0 rotation) ;; g-larm
+       (send *ri* :go-pos-unsafe 0.27 -0.03 0) ;; g-larm
        ))
     (send *ri* :wait-interpolation))
 
@@ -939,7 +957,7 @@
 
 
 (defun grasp-can-init ()
-  (send *pr2* :head :neck-p :joint-angle 20)
+  (send *pr2* :head :neck-p :joint-angle 30)
   (send *pr2* :head :neck-y :joint-angle 23)
   (send *ri* :angle-vector (send *pr2* :angle-vector) 2000 :head-controller)
   )
@@ -954,10 +972,10 @@
      ((not (send *ri* :simulation-modep)) ;; real mode
       (unless (setq cds (check-detection :speak-name *type*
                                          :type *type* :tf-force t :timeout 35 :single t
-                                         :detection-topic "/kinect_head_c2/depth_registered/ObjectDetection"))
+                                         :detection-topic "/kinect_head/depth_registered/ObjectDetection"))
         (setq cds (check-detection :speak-name *type*
                                    :type *type* :tf-force t :timeout 70 :single t
-                                   :detection-topic "/kinect_head_c2/depth_registered/ObjectDetection"))))
+                                   :detection-topic "/kinect_head/depth_registered/ObjectDetection"))))
      (t ;; simulation mode
       (setq cds (send (make-cube 60 60 60) :translate (float-vector 756 302 1164)))))
     (setq *can-cds* cds)

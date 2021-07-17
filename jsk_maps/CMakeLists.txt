@@ -42,18 +42,31 @@ catkin_package()
 
 set(_generated_files
   ${PROJECT_SOURCE_DIR}/raw_maps/eng2-2f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng2-2f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng2-7f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng2-7f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng6-1f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng6-1f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng6-3f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng6-3f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng6-b1f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng6-b1f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng8-6f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng8-6f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng2-1f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng2-1f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng2-3f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng2-3f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng2-8f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng2-8f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng6-2f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng6-2f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng6-4f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng6-4f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/raw_maps/eng8-1f-0.05.yaml
-  ${PROJECT_SOURCE_DIR}/raw_maps/ eng8-b1f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng8-1f-0.05_keepout.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng8-b1f-0.05.yaml
+  ${PROJECT_SOURCE_DIR}/raw_maps/eng8-b1f-0.05_keepout.yaml
   ${PROJECT_SOURCE_DIR}/launch/start_map_eng2_main.launch
   ${PROJECT_SOURCE_DIR}/launch/start_map_eng6_main.launch
   ${PROJECT_SOURCE_DIR}/launch/start_map_eng8_main.launch
@@ -72,3 +85,13 @@ install(DIRECTORY launch raw_maps src tools
   DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}
   USE_SOURCE_PERMISSIONS)
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  find_package(jsk_tools REQUIRED)
+  if (${jsk_tools_VERSION} VERSION_LESS "2.0.9")
+    message(WARNING "To test this package, 'jsk_tools>=2.0.9' is required. Skipping...")
+  else()
+    add_rostest(test/jsk-maps.test)
+  endif()
+endif()

@@ -72,7 +72,7 @@
 
 (defun make-eng2-3f-scene ()
   (let* (scene map floor-names rooms spots objects)
-    (setq map (make-floor-plane (ros::resolve-ros-path "package://jsk_maps/raw_maps/eng2-3f-0.05.pgm") 50 -13000 -48500 :name "/eng2/3f/floor-plane"))
+    (setq map (make-floor-plane (ros::resolve-ros-path "package://jsk_maps/raw_maps/eng2-3f-0.05.pgm") 50 -11900 -47100 :name "/eng2/3f/floor-plane"))
 
     ;; 3F
     (make-cascoords-tree
@@ -183,8 +183,11 @@
 ;;     `(:rot #2f((0.999416 0.034172 -4.379428e-05) (-0.034172 0.999416 0.000314) (5.449240e-05 -0.000312 1.0)) :pos ,(float-vector 4477.2 8082.31 51.6065) :name "/eng2/7f/room73B2-fridge-front")
 
 	 ;; updated 73b2 room
+	 ;; `(:rot ,(rpy-matrix 0.04 -0.005 0.003)
+	 ;;		:pos ,(float-vector 4410.0 8129.0 51.6065)
+	 ;;		:name "/eng2/7f/room73B2-fridge-front")
 	 `(:rot ,(rpy-matrix 0.04 -0.005 0.003)
-			:pos ,(float-vector 4410.0 8129.0 51.6065)
+			:pos ,(float-vector 4410.0 7629.0 51.6065)
 			:name "/eng2/7f/room73B2-fridge-front")
 	 `(:rot ,(rpy-matrix 1.563 0.003 0.003)
 			:pos ,(float-vector 3228.967 7292.739 51.6065)
@@ -216,6 +219,15 @@
          `(:rot ,(rpy-matrix 0 0 0)
                 :pos ,(float-vector -750.0 6829.0 51.6065)
                 :name "/eng2/7f/room73A3-front1")
+	 `(:rot ,(rpy-matrix 0 0 0)
+			:pos ,(float-vector 5600 6000 51.6065)
+			:name "/eng2/7f/room73B2-fetch-dock-front")
+	 `(:rot ,(rpy-matrix 0 0 0)
+			:pos ,(float-vector 5600 6650 51.6065)
+			:name "/eng2/7f/room73B2-fetch-dock2-front")
+	 `(:rot ,(rpy-matrix pi/2 0 0)
+                        :pos ,(float-vector 2753 7698 51.6065)
+			:name "/eng2/7f/room73B2-fetch-dock-entrance")
 
 
 

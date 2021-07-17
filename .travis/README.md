@@ -3,13 +3,7 @@
 [![Join the chat at https://gitter.im/jsk-ros-pkg/jsk_travis](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jsk-ros-pkg/jsk_travis?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_travis.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_travis)
 
-![](jsk_travis_diagram.png)
-
-- How to update docker image on jenkins
-```
-echo -e "FROM ros-ubuntu:14.04\nRUN apt-get update\nRUN apt-get -y upgrade\nEXPOSE 22" | sudo docker build -t ros-ubuntu:14.04 -
-```
-
+![](_media/jsk_travis_diagram.png)
 
 ----------------------------------------------------------
 
@@ -17,7 +11,8 @@ echo -e "FROM ros-ubuntu:14.04\nRUN apt-get update\nRUN apt-get -y upgrade\nEXPO
 
 jsk_travis is a package to test ROS repositories on travis and jenkins.
 In order to test on hydro, it uses travis and on indigo and jade, it uses jenkins by default.
-Use `USE_TRAVIS` and `USE_JENKINS` to configure them manually.
+On travis, docker can be enabled to test multiple distribution.
+Use `USE_DOCKER`, `USE_TRAVIS` and `USE_JENKINS` to configure them manually.
 The jenkins server is available on [jenkins.jsk.imi.i.u-tokyo.ac.jp](https://jenkins.jsk.imi.i.u-tokyo.ac.jp:8080).
 
 
@@ -31,6 +26,8 @@ git submodule add https://github.com/jsk-ros-pkg/jsk_travis.git .travis
 And each project needs to setup .travis.yml for the travis.
 [jsk_common's .travis.yml](https://github.com/jsk-ros-pkg/jsk_common/blob/master/.travis.yml) is a good example to setup
 .travis.yml.
+
+Note that jsk\_travis only supports being upgraded and PRs that downgrades jsk\_travis result in test fails.
 
 
 ## Restarting tests
@@ -60,12 +57,31 @@ see [this document](https://github.com/jsk-ros-pkg/jsk_common#restart-travis-fro
   Specify your target distribution of ROS. Now we support hydro, indigo and jade.
   If you specify indigo or jade, tests automatically run on jenkins.
 
+* `ROS_PYTHON_VERSION` (default: none)
+
+  Specify your target python version used of ROS. Available from Noetic.
+  see [Build Using Python3](http://wiki.ros.org/UsingPython3/BuildUsingPython3) and
+  [rep 149](https://github.com/ros-infrastructure/rep/blob/master/rep-0149.rst)
+
 * `USE_DEB` (value: [`true`|`false`|`source`])
 
   If `false`, travis firstly sees [config files](#config-files) to resolve dependencies,
   and then installs left dependencies by apt.
   If `source`, travis does not sees [config files](#config-files) but runs `setup_upstream.sh` file.
   See [here](https://github.com/jsk-ros-pkg/jsk_roseus) for example.
+  
+* `USE_DOCKER` (default: `false`)
+
+  Force to use docker on travis.
+
+* `DOCKER_IMAGE_JENKINS` (defualt: `ros-ubuntu:$(lsb_release -sr)`)
+
+  Docker image used in Jenkins.
+
+* `DOCKER_RUN_OPTION` (default: `--rm`)
+
+  Options passed to `docker run` if `USE_DOCKER` is `true`. Ignored otherwise.  
+  **NOTE** If `--rm` is not set, the container remains even after job is finished. You must be responsible for removing it.
 
 * `USE_JENKINS` (default: `false`)
 
@@ -84,6 +100,16 @@ see [this document](https://github.com/jsk-ros-pkg/jsk_common#restart-travis-fro
 
   The number of catkin parallel processes in test.
 
+* `CATKIN_TOOLS_BUILD_OPTIONS`
+  (default: `-iv --summarize --no-status` for `catkin-tools==0.3.X`
+   and `--summarize --no-status` for `catkin-tools` of other version.)
+
+  Options to be passed like `catkin build $CATKIN_TOOLS_BUILD_OPTIONS`.
+
+* `CATKIN_TOOLS_CONFIG_OPTIONS` (default: none)
+
+  Options to be passed like `catkin config $CATKIN_TOOLS_CONFIG_OPTIONS`.
+
 * `ROS_PARALLEL_TEST_JOBS` (default: `-j8`)
 
   The number of make parallel processes in test.
@@ -91,6 +117,25 @@ see [this document](https://github.com/jsk-ros-pkg/jsk_common#restart-travis-fro
 * `ROSDEP_ADDITIONAL_OPTIONS` (default: `-n -q -r --ignore-src`)
 
   The options passed when rosdep install.
+
+* `NOT_TEST_INSTALL` (none or `true`, default: none)
+
+  Flag to skip testing catkin install in addition to devel build.
+
+* `CMAKE_DEVELOPER_ERROR` (none or `true`, default: none)
+
+  Flag to show CMake developer error in catkin run_tests.
+
+* `ADDITIONAL_ENV_TO_DOCKER` (default: none)
+
+  Specify environment variables you want to pass to docker on travis/jenkins.
+  You can specify multiple variables separated by a space.  
+  e.g. `IS_EUSLISP_TRAVIS_TEST IS_GAZEBO_TRAVIS_TEST`
+
+* `DEBUG_TRAVIS_PYTHON` (default: none)
+
+  Specify python command to run within travis/docker/jenkins,
+  for example set `DEBUG_TRAVIS_PYTHON` to `python -v`
 
 ## Config Files
 
@@ -106,7 +151,7 @@ see [this document](https://github.com/jsk-ros-pkg/jsk_common#restart-travis-fro
 
 ```
 mv CATKIN_IGNORE CATKIN_IGNORE.bak
-catkin_generate_changelog --skip-merges
+catkin_generate_changelog
 emacs -nw CHANGELOG.rst                 # prettify CHANGELOG so we can understand what has changed
 git commit -m "update CHANGELOG" CHANGELOG.rst
 catkin_prepare_release --no-push        # please type "Y" to all
@@ -114,6 +159,21 @@ mv CATKIN_IGNORE.bak CATKIN_IGNORE      # do not forget this
 gitk                                    # make sure that what you changed is correct
 git push && git push --tags
 ```
+
+## How to build docker images used in jenkins
+
+```
+cd docker; make
+```
+
+This will build base images for each distros, such as `ros-ubuntu:12.04-base`, `ros-ubuntu:14.04-base`, `ros-ubuntu:16.04-base` ...
+
+and PCL-installed images `ros-ubuntu:14.04-pcl`, `ros-ubuntu:16.04-pcl` ...
+
+Each images are re-build everyday by `--build-arg CACHEBUST=$(date +%%Y%%m%%d)`.
+
+Note that `ros-ubuntu:14.04` is used for build process and we do not expect users to run this package. Please use `ros-ubuntu:14.04-base` instead.
+
 
 
 ## Debug by changing the submodule jsk_travis
