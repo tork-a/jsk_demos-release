@@ -1,9 +1,16 @@
-jsk_demos [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_demos.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_demos)
-=========
+How to start this demo
+----------------------
 
-JSK demo programs
+First, start launch file in Fetch.
+```
+ssh fetch15
+roslaunch welcome_to_jsk_fetch welcome_to_jsk_fetch.launch
+```
 
+Next, type `roseus` in your terminal.
 
-## [jsk_2013_04_pr2_610](https://github.com/jsk-ros-pkg/jsk_demos/tree/master/jsk_2013_04_pr2_610)
+Then, you can call many functions, such as `guide` or `go-to-point`.
 
-   ![bloom](https://gist.githubusercontent.com/k-okada/b3308c08ce31230e8947/raw/c14d6c52d8bf35fd5c244d989beccd35caa6fa8a/jsk_2013_04_pr2_irt_4.png =200x200)
+When you want to navigate with Fetch, please satisfy conditions below:
+ - Open doors
+ - Start navigation program at entrance of 73B2
