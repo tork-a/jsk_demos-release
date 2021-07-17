@@ -1,9 +1,40 @@
-jsk_demos [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_demos.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_demos)
-=========
+jsk_maps
+========
 
-JSK demo programs
+Map tools for JSK Buildings
 
+## Usage
 
-## [jsk_2013_04_pr2_610](https://github.com/jsk-ros-pkg/jsk_demos/tree/master/jsk_2013_04_pr2_610)
+- With `map_server` (e.g. for `PR2`)
 
-   ![bloom](https://gist.githubusercontent.com/k-okada/b3308c08ce31230e8947/raw/c14d6c52d8bf35fd5c244d989beccd35caa6fa8a/jsk_2013_04_pr2_irt_4.png =200x200)
+  ``` bash
+  roslaunch jsk_maps start_map_eng2.launch
+```
+
+- Without `map_server` (e.g. for `fetch`)
+
+  ```bash
+  roslaunch jsk_maps start_map_eng2.launch launch_map_server:=false
+```
+
+## Sync real world update to map
+
+  1. Cleanup your room (In order to create clean map)
+  1. Create partial map with your robots (currently PR2)
+  
+  ```bash
+  robot start
+  roslaunch jsk_pr2_startup pr2_2dnav.launch
+  rosrun map_server map_saver
+  # Then move robot with joystick
+```
+
+  1. Merge the partial map into floor map
+  
+  Edit `pgm` file with Gimp
+  
+  1. Update models (objects / spots)
+  
+    1. Update spots (e.g. https://github.com/jsk-ros-pkg/jsk_demos/pull/1176)
+    2. Update objects (e.g. https://github.com/euslisp/EusLisp/pull/154)
+    3. Create new objects (e.g. https://github.com/jsk-ros-pkg/euslib/pull/188)
