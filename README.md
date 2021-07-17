@@ -1,9 +1,19 @@
-jsk_demos [![Build Status](https://travis-ci.org/jsk-ros-pkg/jsk_demos.svg?branch=master)](https://travis-ci.org/jsk-ros-pkg/jsk_demos)
-=========
+# PR2, stabling Diablo horizontal with NeuralNetwork Controller
+![video](https://github.com/takayuki5168/diabolo_pr2_201806/blob/master/gif/pr2-diabolo.gif)
 
-JSK demo programs
+### idle
+```sh
+$ roslaunch demo_idle_diabolo.launch
+```
 
-
-## [jsk_2013_04_pr2_610](https://github.com/jsk-ros-pkg/jsk_demos/tree/master/jsk_2013_04_pr2_610)
-
-   ![bloom](https://gist.githubusercontent.com/k-okada/b3308c08ce31230e8947/raw/c14d6c52d8bf35fd5c244d989beccd35caa6fa8a/jsk_2013_04_pr2_irt_4.png =200x200)
+## idle with a NN controller
+```sh
+$ roslaunch idle_diabolo.launch
+```
+```sh
+$ python diabolo_system.py -m ../log/diabolo_system/goodmodel_612_0.h5 -a 1
+```
+```sh
+$ roseus juggle.l
+    idle t t t :diabolo-system t
+```
